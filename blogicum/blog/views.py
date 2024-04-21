@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 
 posts = [
@@ -43,18 +44,24 @@ posts = [
     },
 ]
 
+post_dict = {post['id']: post for post in posts}
+
 
 def index(request):
-    return render(request, 'blog/index.html', context={'posts': posts})
+    return render(request, 'blog/index.html', context={'posts': posts[::-1]})
 
 
-def post_detail(request, id):
-    post_id = posts[id]
-    return render(request, 'blog/detail.html', context={'post': post_id})
+def post_detail(request, post_id):
+    post = post_dict.get(post_id)
+    if post:
+        return render(request, 'blog/detail.html', context={'post': post})
+    else:
+        return HttpResponse("Пост не найден")
 
 
 def category_posts(request, category_slug):
-    return render(request, 'blog/category.html', context={
-        'post': category_slug
-    }
+    return render(
+        request,
+        'blog/category.html',
+        context={'post': category_slug}
     )
