@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.shortcuts import render
 
 posts = [
@@ -44,7 +44,7 @@ posts = [
     },
 ]
 
-post_dict = {post['id']: post for post in posts}
+POSTS_ID = {post['id']: post for post in posts}
 
 
 def index(request):
@@ -52,11 +52,10 @@ def index(request):
 
 
 def post_detail(request, post_id):
-    post = post_dict.get(post_id)
+    post = POSTS_ID.get(post_id)
     if post:
         return render(request, 'blog/detail.html', context={'post': post})
-    else:
-        return HttpResponse("Пост не найден")
+    raise Http404
 
 
 def category_posts(request, category_slug):
